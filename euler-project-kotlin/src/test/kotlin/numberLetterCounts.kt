@@ -1,9 +1,10 @@
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import java.lang.IllegalArgumentException
+import kotlin.math.floor
 
 
-private val numbers = mapOf<Int, String>(
+private val numbers = mapOf(
     0 to "zero",
     1 to "one",
     2 to "two",
@@ -71,15 +72,12 @@ private fun hundredthsToWords(number: Int): String {
 @kotlin.ExperimentalStdlibApi
 fun numberToWords(number: Int): String {
 
-    if (number >= 1000) {
+    if (number > 999) {
+        val thousands = hundredthsToWords(floor(number / 1000.0).toInt())
         if (number % 1000 > 0) {
-            return "${hundredthsToWords(number.firstDigitValue())} thousand ${
-                hundredthsToWords(
-                    number.toString().takeLast(3).toInt()
-                )
-            }"
+            return "$thousands thousand ${hundredthsToWords(number.toString().takeLast(3).toInt())}"
         }
-        return "${hundredthsToWords(number.firstDigitValue())} thousand"
+        return "$thousands thousand"
     }
 
     if (number >= 100) {
@@ -142,6 +140,7 @@ class ConvertToWordsSpec : StringSpec({
         1100 to "one thousand one hundred",
         2000 to "two thousand",
         3333 to "three thousand three hundred and thirty-three",
+        999999 to "nine hundred and ninety-nine thousand nine hundred and ninety-nine"
     ).forEach { (input, expected) ->
         "$input should be written as $expected" {
             numberToWords(input) shouldBe expected
