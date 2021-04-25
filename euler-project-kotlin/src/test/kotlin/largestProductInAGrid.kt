@@ -1,8 +1,10 @@
-import assertk.assertThat
-import assertk.assertions.hasSize
-import assertk.assertions.isEqualTo
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
+import io.kotest.core.Tuple2
+import io.kotest.core.Tuple3
+import io.kotest.core.datatest.forAll
+import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.shouldBe
 
 fun createGrid(): List<List<Int>> {
     val grid = """08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08
@@ -34,15 +36,13 @@ fun createGrid(): List<List<Int>> {
         }
 }
 
-class CreateGridSpek : Spek({
-    describe("an input grid") {
-        it("is split into a list of lists") {
-            val grid = createGrid()
+class CreateGridSpec : StringSpec({
+    "the input grid is split into a list of lists" {
+        val grid = createGrid()
 
-            assertThat(grid).hasSize(20)
-            assertThat(grid[0]).hasSize(20)
-            assertThat(grid[0][0]).isEqualTo(8)
-        }
+        grid shouldHaveSize 20
+        grid[0] shouldHaveSize 20
+        grid[0][0] shouldBe 8
     }
 })
 
@@ -88,87 +88,61 @@ fun getAdjacentNumbers(grid: List<List<Int>>, direction: Direction, groupSize: I
     }
 }
 
-class GetAdjacentNumbersSpek : Spek({
+class GetAdjacentNumbersSpec : BehaviorSpec({
+    given("the original 20x20 grid") {
+        val grid = createGrid()
 
-    describe("retrieving horizontal groups") {
-        val numbers = getAdjacentNumbers(createGrid(), Direction.HORIZONTAL)
-        it("has taken the items in the first row") {
-            assertThat(numbers.first()).isEqualTo(listOf(8, 2, 22, 97))
-        }
-        it("has taken the items in the last row") {
-            assertThat(numbers.last()).isEqualTo(listOf(89, 19, 67, 48))
+        forAll(
+            Tuple3(Direction.HORIZONTAL, listOf(8, 2, 22, 97), listOf(89, 19, 67, 48)),
+            Tuple3(Direction.VERTICAL, listOf(8, 49, 81, 52), listOf(36, 16, 54, 48)),
+            Tuple3(Direction.DIAGONAL_FORWARD, listOf(97, 99, 49, 52), listOf(36, 36, 57, 89)),
+            Tuple3(Direction.DIAGONAL_BACKWARD, listOf(8, 49, 31, 23), listOf(40, 4, 5, 48)),
+        ) { (direction, expectedFirstNumbers, expectedLastNumbers) ->
+            When("retrieving ${direction.name} groups") {
+                val numbers = getAdjacentNumbers(grid, direction)
+
+                then("the first set of items in the groups should be $expectedFirstNumbers") {
+                    numbers.first() shouldBe expectedFirstNumbers
+                }
+                then("the last set of items in the groups should be $expectedLastNumbers") {
+                    numbers.last() shouldBe expectedLastNumbers
+                }
+            }
         }
     }
 
-    describe("retrieving vertical groups") {
-        val numbers = getAdjacentNumbers(createGrid(), Direction.VERTICAL)
-        it("has taken the first items in the first column") {
-            assertThat(numbers.first()).isEqualTo(listOf(8, 49, 81, 52))
-        }
-        it("has taken the last items in the last column") {
-            assertThat(numbers.last()).isEqualTo(listOf(36, 16, 54, 48))
-        }
-    }
-
-    describe("retrieving diagonal forward groups (/)") {
-        val numbers = getAdjacentNumbers(createGrid(), Direction.DIAGONAL_FORWARD)
-        it("has taken the first vertical items") {
-            assertThat(numbers.first()).isEqualTo(listOf(97, 99, 49, 52))
-        }
-        it("has taken the last vertical items") {
-            assertThat(numbers.last()).isEqualTo(listOf(36, 36, 57, 89))
-        }
-    }
-
-    describe("retrieving diagonal backward groups (\\)") {
-        val numbers = getAdjacentNumbers(createGrid(), Direction.DIAGONAL_BACKWARD)
-        it("has taken the first vertical items") {
-            assertThat(numbers.first()).isEqualTo(listOf(8, 49, 31, 23))
-        }
-        it("has taken the last vertical items") {
-            assertThat(numbers.last()).isEqualTo(listOf(40, 4, 5, 48))
-        }
-    }
-
-    describe("the grid is the same size (5) as the groups to retrieve") {
+    given("a 5x5 grid") {
         val grid = createGrid().slice(0..4).map { it.slice(0..4) }
-        val groupSize = 5
 
-        it("has 5 horizontal groups") {
-            val numbers = getAdjacentNumbers(grid, Direction.HORIZONTAL, groupSize)
-            assertThat(numbers.size).isEqualTo(groupSize)
-        }
+        and("size of each group is equal to the grid size") {
+            val groupSize = grid.size
 
-        it("has 5 vertical groups") {
-            val numbers = getAdjacentNumbers(grid, Direction.VERTICAL, groupSize)
-            assertThat(numbers.size).isEqualTo(groupSize)
-            numbers.forEach { assertThat(it.size).isEqualTo(groupSize) }
-        }
+            forAll(
+                Tuple2(Direction.HORIZONTAL, 5),
+                Tuple2(Direction.VERTICAL, 5),
+                Tuple2(Direction.DIAGONAL_FORWARD, 1),
+                Tuple2(Direction.DIAGONAL_BACKWARD, 1),
+            ) { (direction, expectedGroupCount) ->
+                When("retrieving ${direction.name} groups") {
+                    val numbers = getAdjacentNumbers(grid, direction, groupSize)
 
-        it("has 1 forward diagonal group") {
-            val numbers = getAdjacentNumbers(grid, Direction.DIAGONAL_FORWARD, groupSize)
-            assertThat(numbers.size).isEqualTo(1)
-            numbers.forEach { assertThat(it.size).isEqualTo(groupSize) }
-        }
-
-        it("has 1 backward diagonal group") {
-            val numbers = getAdjacentNumbers(grid, Direction.DIAGONAL_BACKWARD, groupSize)
-            assertThat(numbers.size).isEqualTo(1)
-            numbers.forEach { assertThat(it.size).isEqualTo(groupSize) }
+                    then("$expectedGroupCount groups should be found") {
+                        numbers.size shouldBe expectedGroupCount
+                        numbers.forEach { it.size shouldBe groupSize }
+                    }
+                }
+            }
         }
     }
 })
 
-class GetHighestAdjacentValuesSpek : Spek({
-    describe("an input grid") {
-        it("has one range of adjacent values with the highest value") {
-            val grid = createGrid()
+class GetHighestAdjacentValuesSpec : StringSpec({
+    "the largest product of all groups in the grid should be 70600674" {
+        val grid = createGrid()
 
-            val allValues = Direction.values().flatMap { direction -> getAdjacentNumbers(grid, direction) }
-            val highestValue = allValues.map { it.reduce { acc, i -> acc * i } }.maxOrNull()
+        val allValues = Direction.values().flatMap { direction -> getAdjacentNumbers(grid, direction) }
+        val highestValue = allValues.map { it.reduce { acc, i -> acc * i } }.maxOrNull()
 
-            assertThat(highestValue).isEqualTo(70600674)
-
-        }
+        highestValue shouldBe 70600674
     }
 })

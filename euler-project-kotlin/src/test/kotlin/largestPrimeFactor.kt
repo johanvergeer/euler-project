@@ -1,14 +1,9 @@
-import assertk.assertThat
-import assertk.assertions.isEqualTo
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.shouldBe
 import java.math.BigInteger
 
-class LargestPrimeFactorSpek: Spek({
-    describe("the number 600851475143") {
-        it("has the largest prime factor of 6857") {
-            val primes = primesOf(BigInteger.valueOf(600851475143))
-            assertThat(primes.maxOrNull()).isEqualTo(6857.toBigInteger())
-        }
+class LargestPrimeFactorsSpec: StringSpec({
+    "the number 600851475143 should have the largest prime factor of 6857" {
+        primesOf(BigInteger.valueOf(600851475143)).maxOrNull() shouldBe 6857.toBigInteger()
     }
 })

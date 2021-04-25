@@ -1,20 +1,12 @@
-import assertk.assertThat
-import assertk.assertions.isEqualTo
-import assertk.assertions.isTrue
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
-import kotlin.math.pow
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.shouldBe
 
-class IsPythagoreanTripletSpek : Spek({
-    describe("a pythagorean triplet") {
-        it("returns true") {
-            assertThat(Triple(3, 4, 5).isPythagoreanTriplet()).isTrue()
-        }
+class IsPythagorianTripletSpek : StringSpec({
+    "${Triple(3, 4, 5)} should be a Pythagorean triplet" {
+        Triple(3, 4, 5).isPythagoreanTriplet() shouldBe true
     }
-    describe("a sum") {
-        it("should have a triplet") {
-            assertThat(pythagoreanTriplet(1000)?.prod()).isEqualTo(31875000)
-        }
+
+    "The product of the Pythagorean triplet of 1000 should be 31875000" {
+        pythagoreanTriplet(1000)?.prod() shouldBe 31875000
     }
 })
-

@@ -1,7 +1,5 @@
-import assertk.assertThat
-import assertk.assertions.isEqualTo
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.shouldBe
 import kotlin.math.*
 
 fun smallestMultipleNaiveApproach(): Int {
@@ -32,12 +30,8 @@ fun smallestMultiple(of: Int): Int {
         }
 }
 
-class SmallestMultipleSpek : Spek({
-    describe("when searching for the smallest number evenly divisible by all of the numbers from 1 to 20") {
-        it("will be 232792560") {
-            val expected = 232792560
-
-            assertThat(smallestMultiple(20)).isEqualTo(expected)
-        }
+class SmallestMultipleSpec: StringSpec({
+    "the smallest number evenly divisible by all of the numbers from 1 to 20 should be 232792560" {
+        smallestMultiple(20) shouldBe 232792560
     }
 })

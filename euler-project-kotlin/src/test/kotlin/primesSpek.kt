@@ -1,13 +1,10 @@
-import assertk.assertThat
-import assertk.assertions.isEqualTo
-import assertk.assertions.isFalse
-import assertk.assertions.isTrue
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
-import java.math.BigInteger
+import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.shouldBe
 
-class primesSpek : Spek({
-    val values = mapOf(
+
+class PrimesSpec : StringSpec({
+    mapOf(
         1 to listOf(),
         2 to listOf(2),
         3 to listOf(3),
@@ -18,54 +15,43 @@ class primesSpek : Spek({
         8 to listOf(2, 2, 2),
         9 to listOf(3, 3),
         2 * 2 * 2 * 3 * 5 * 7 * 11 to listOf(2, 2, 2, 3, 5, 7, 11),
-    )
+    ).forEach { (input, expected) ->
+        "$input should have the prime numbers $expected" {
+            primesOf(input) shouldBe expected
+        }
+    }
+})
 
-    values.forEach { (input, expected) ->
-        describe("the value $input") {
-            it("has the prime numbers $expected") {
-                assertThat(primesOf(input)).isEqualTo(expected)
+class IsPrimeSpec : BehaviorSpec({
+    val primeNumbers = IsPrimeSpec::class.java.getResource("/primes-to-100k.txt")
+        .readText()
+        .split("\n")
+        .mapNotNull { it.trim().toIntOrNull() }
+    val nonPrimeNumbers = (0..100_000).filterNot { it in primeNumbers }
+
+    given("a set of prime numbers up to ${primeNumbers.maxOrNull()}") {
+        When("checking whether all numbers are primes") {
+            then("the return value for each number should be true") {
+                primeNumbers.forEach {
+                    it.isPrime() shouldBe true
+                }
             }
         }
     }
 
-    values.forEach { (input, expected) ->
-        describe("the BigInteger value $input") {
-            it("has the prime numbers $expected") {
-                assertThat(primesOf(input.toBigInteger())).isEqualTo(expected.map { it.toBigInteger() })
+    given("a set of non-prime numbers up to ${nonPrimeNumbers.maxOrNull()}") {
+        When("checking whether all numbers are primes") {
+            then("the return value for each number should be false") {
+                nonPrimeNumbers.forEach {
+                    it.isPrime() shouldBe false
+                }
             }
         }
     }
 })
 
-
-class IsPrimeSpek : Spek({
-    val primeNumbersText = IsPrimeSpek::class.java.getResource("/primes-to-100k.txt").readText()
-    val primeNumbers: List<Int> = primeNumbersText.split("\n").mapNotNull { it.strip().toIntOrNull() }
-
-    primeNumbers.forEach {
-        describe("isPrime is checking $it") {
-            it("should return true") {
-                assertThat(it.isPrime()).isTrue()
-            }
-        }
-    }
-
-    (0..100_000).filterNot { primeNumbers.contains(it) }.forEach {
-        describe("isPrime is checking $it") {
-            it("should return false") {
-                assertThat(it.isPrime()).isFalse()
-            }
-        }
-    }
-})
-
-
-class SummationOfPrimesSpek : Spek({
-    describe("a number 2_000_000") {
-        it("should return the sum of all prime numbers up to the given number") {
-            val sum = summationOfPrimes(2_000_000)
-
-            assertThat(sum).isEqualTo(142913828922.toBigInteger())
-        }
+class SummationOfPrimesSpec : StringSpec({
+    "the sum of all prime numbers up to 2.000.000 should be 142913828922" {
+        summationOfPrimes(2_000_000) shouldBe 142913828922.toBigInteger()
     }
 })
