@@ -50,4 +50,3 @@ fun primesUpTo(upTo: Int) = (0..upTo).filter { it.isPrime() }
 fun summationOfPrimes(upTo: Int) = primesUpTo(upTo)
     .map { it.toBigInteger() }
     .sumOf { it }
-

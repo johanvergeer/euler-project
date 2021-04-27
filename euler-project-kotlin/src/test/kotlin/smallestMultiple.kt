@@ -1,6 +1,8 @@
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
-import kotlin.math.*
+import kotlin.math.floor
+import kotlin.math.log2
+import kotlin.math.sqrt
 
 fun smallestMultipleNaiveApproach(): Int {
     var i = 1
@@ -30,7 +32,7 @@ fun smallestMultiple(of: Int): Int {
         }
 }
 
-class SmallestMultipleSpec: StringSpec({
+class SmallestMultipleSpec : StringSpec({
     "the smallest number evenly divisible by all of the numbers from 1 to 20 should be 232792560" {
         smallestMultiple(20) shouldBe 232792560
     }

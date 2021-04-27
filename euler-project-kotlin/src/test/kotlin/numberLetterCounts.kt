@@ -3,7 +3,6 @@ import io.kotest.matchers.shouldBe
 import java.lang.IllegalArgumentException
 import kotlin.math.floor
 
-
 private val numbers = mapOf(
     0 to "zero",
     1 to "one",
@@ -49,7 +48,6 @@ private fun Int.lastDigitValue(): Int {
     return this.toString().last().digitToInt()
 }
 
-
 @kotlin.ExperimentalStdlibApi
 private fun numberUnder100ToWords(number: Int): String {
     if ((number > 20) and (number % 10 > 0)) {
@@ -68,7 +66,6 @@ private fun hundredthsToWords(number: Int): String {
     }
 }
 
-
 @kotlin.ExperimentalStdlibApi
 fun numberToWords(number: Int): String {
 
@@ -86,7 +83,6 @@ fun numberToWords(number: Int): String {
 
     return numberUnder100ToWords(number)
 }
-
 
 @kotlin.ExperimentalStdlibApi
 class ConvertToWordsSpec : StringSpec({
@@ -145,7 +141,6 @@ class ConvertToWordsSpec : StringSpec({
         "$input should be written as $expected" {
             numberToWords(input) shouldBe expected
         }
-
     }
 })
 

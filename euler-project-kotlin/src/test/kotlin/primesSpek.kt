@@ -2,7 +2,6 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 
-
 class PrimesSpec : StringSpec({
     mapOf(
         1 to listOf(),

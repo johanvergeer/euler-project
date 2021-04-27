@@ -1,11 +1,15 @@
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
 import kotlin.math.floor
 import kotlin.math.sqrt
 
 fun amicableNumbersOf(number: Int): Set<Int> {
-    
+
     val numbers = mutableSetOf(1)
 
     for (i in 2 until floor(sqrt(number.toDouble())).toInt()) {
@@ -24,7 +28,6 @@ fun amicableNumbersOf(number: Int): Set<Int> {
     return numbers.toSet()
 }
 
-
 class AmicableNumbersSpec : StringSpec({
     mapOf(
         220 to 284,
@@ -35,7 +38,6 @@ class AmicableNumbersSpec : StringSpec({
                 amicableNumbersOf(input).sum() shouldBe expected
             }
         }
-
 })
 
 suspend fun <A, B> Iterable<A>.pmap(f: suspend (A) -> B): List<B> = coroutineScope {

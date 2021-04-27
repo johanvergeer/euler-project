@@ -4,7 +4,6 @@ interface Collatz {
     fun countChain(n: Long): Int
 }
 
-
 class CollatzNaive : Collatz {
     private fun collatzSequence(startsAt: Long): List<Long> {
         var currentValue = startsAt

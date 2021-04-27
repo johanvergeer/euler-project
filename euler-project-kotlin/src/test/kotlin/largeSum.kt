@@ -103,7 +103,7 @@ fun main() {
     val sum = numbersString
         .split("\n")
         .map { it.toBigInteger() }
-        .reduce { acc, bigInteger ->  acc + bigInteger}
+        .reduce { acc, bigInteger -> acc + bigInteger }
 
     println(sum)
     println(sum.toString().substring(0..9))
