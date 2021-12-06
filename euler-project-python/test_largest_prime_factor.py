@@ -1,4 +1,4 @@
-import pytest
+from pytest import mark, param
 
 
 def primes(value):
